@@ -2,24 +2,44 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import ROUTES from "../../src/config/routes";
 import CategorieService from "../../src/services/CategorieService";
+import { toast } from 'react-toastify';
 
 function CategorieList() {
 
    const [categories, setCategories] = useState([]);
    const [isLoading, setIsLoading] = useState(true);
+   
+   const getCategories = async () => {
+      let data = await CategorieService.getAll()
+
+      setCategories(data)
+   }
 
    useEffect(() => {
-      const getCategories = async () => {
-         let data = await CategorieService.getAll()
-
-         setCategories(data)
-      }
-
       getCategories().then(() => {
          setIsLoading(false)
       })
 
    }, [])
+
+   const deleteCategorie = (categorie) => {
+
+      var result = confirm(`Você realmente gostaria de deletar a categoria: ${categorie.name}`)
+
+      if (!result) return
+
+
+      setIsLoading(true);
+      CategorieService.destroy(categorie.id).then((data) => {
+         getCategories().then(() => {
+            setIsLoading(false)
+            toast.success('Categorie destroyled Success')
+         }).catch((e) => {
+            toast.error('Error delete Categorie');
+         })
+      })
+   }
+
 
 
    if (isLoading) return <p>Carregando</p>
@@ -89,7 +109,7 @@ function CategorieList() {
                               <a>Editar</a>
                            </Link>
 
-                           <button>Deletar</button>
+                           <button onClick={() => {deleteCategorie(categorie)}}>Deletar</button>
                         </td>
                      </tr>
                   )
