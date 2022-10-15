@@ -11,6 +11,10 @@ a {
   text-decoration: none;
 }
 
+div.field {
+  margin-top: 2;
+}
+
 * {
   box-sizing: border-box;
 }
